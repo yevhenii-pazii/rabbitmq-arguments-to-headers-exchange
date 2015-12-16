@@ -9,7 +9,7 @@
 -module(rabbit_exchange_type_arguments_to_headers).
 -author("Evgeniy.Paziy <epaziy@softserveinc.com>").
 
--include_lib("rabbit.hrl").
+-include_lib("rabbit_common/include/rabbit.hrl").
 
 -behaviour(rabbit_exchange_type).
 
