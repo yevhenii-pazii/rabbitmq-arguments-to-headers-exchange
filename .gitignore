@@ -11,3 +11,5 @@ rel/example_project
 .idea
 _build
 rebar.lock
+tmp
+*.ez
