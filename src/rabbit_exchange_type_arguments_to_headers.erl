@@ -9,6 +9,8 @@
 -module(rabbit_exchange_type_arguments_to_headers).
 -author("Evgeniy.Paziy <epaziy@softserveinc.com>").
 
+-include_lib("rabbit.hrl").
+
 -behaviour(rabbit_exchange_type).
 
 %% API
@@ -44,8 +46,10 @@ description() ->
 
 serialise_events() -> false.
 
-route(_,_) ->
-  rabbit_router:match_routing_key('_', ['_']).
+% This is classic fanout routing
+route(#exchange{name = Name}, _Delivery) ->
+  rabbit_router:match_routing_key(Name, ['_']).
+% TODO here need to add reading argumets and put them to message headers
 
 
 validate_binding(_X, _B) -> ok.
