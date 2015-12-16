@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 16. Dec 2015 11:45 AM
 %%%-------------------------------------------------------------------
--module(rabbit_exchange_type_header_to_message).
+-module(rabbit_exchange_type_arguments_to_headers).
 -author("Evgeniy.Paziy <epaziy@softserveinc.com>").
 
 -behaviour(rabbit_exchange_type).
@@ -26,17 +26,20 @@
   assert_args_equivalence/2
 ]).
 
--rabbit_boot_step({?MODULE,
-  [{description, "exchange type argument-to-header"},
-    {mfa,         {rabbit_registry, register,
-      [exchange, <<"argument-to-header">>, ?MODULE]}},
-    {requires,    rabbit_registry},
-    {enables,     kernel_ready}]}).
+-rabbit_boot_step(
+  {?MODULE,
+    [{description, "exchange type argument-to-header"},
+      {mfa,         {rabbit_registry, register, [exchange, <<"argument">>, ?MODULE]}},
+      {cleanup, {rabbit_registry, unregister, [exchange, <<"argumente">>]}},
+      {requires,    rabbit_registry},
+      {enables,     kernel_ready}]
+  }
+).
 
 
 description() ->
-  [{name, <<"argument-to-header">>},
-   {description, <<"Adds exchange argumets to message header">>}].
+  [{name, <<"argument">>},
+   {description, <<"Adds exchange argumets to message headers">>}].
 
 
 serialise_events() -> false.

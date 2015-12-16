@@ -1,6 +1,6 @@
-{application, rabbitmq_header_to_message_exchange,
+{application, rabbitmq_arguments_to_headers_exchange,
  [
-  {description, "RabbitMQ Argumets to header Exchange"},
+  {description, "RabbitMQ argumets to header Exchange"},
   {vsn, "0.0.1"},
   {modules, []},
   {registered, []},

@@ -1,4 +1,4 @@
-PACKAGE=rabbitmq_header_to_message_exchange
+PACKAGE=rabbitmq_arguments_to_headers_exchange
 RABBIT_VERSION=3.5.6
 ARCH=$(PACKAGE)-$(RABBIT_VERSION)
 DIST_DIR=ez
@@ -25,4 +25,5 @@ package:
 	cp -r $(EBIN_DIR) $(DIST_DIR)/$(ARCH)
 	$(foreach EXTRA_DIR, $(INCLUDE_DIRS), cp -r $(EXTRA_DIR) $(DIST_DIR)/$(ARCH);)
 	(cd $(DIST_DIR); zip -r $(ARCH).ez $(ARCH))
+	rm -rf $(DIST_DIR)/$(ARCH)
 
