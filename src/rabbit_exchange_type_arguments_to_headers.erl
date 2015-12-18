@@ -10,6 +10,7 @@
 -author("Evgeniy.Paziy <epaziy@softserveinc.com>").
 
 -include_lib("rabbit_common/include/rabbit.hrl").
+-include_lib("rabbit_common/include/rabbit_framing.hrl").
 
 -behaviour(rabbit_exchange_type).
 
@@ -46,20 +47,44 @@ description() ->
 
 serialise_events() -> false.
 
-% This is classic fanout routing
-route(#exchange{name = Name}, _Delivery) ->
-  rabbit_router:match_routing_key(Name, ['_']).
-% TODO here need to add reading argumets and put them to message headers
+route(Exchange, Delivery) ->
+  #exchange{name = Name, arguments = Arguments} = Exchange,
+  BasicMessage = Delivery#delivery.message,
+  Content = BasicMessage#basic_message.content,
+  Headers = rabbit_basic:extract_headers(Content),
 
+  NewHeaders = make_headers(Arguments, Headers),
+
+
+  Routs = rabbit_router:match_routing_key(Name, ['_']),
+  case Headers == NewHeaders of
+    false ->
+      % TODO create new delivery
+      %NewDelivery = Delivery#delivery{message = #basic_message{content = #content{properties = #'P_basic'{headers = Headers}}}},
+      rabbit_amqqueue:deliver(rabbit_amqqueue:lookup(Routs), Delivery), %rabbit_basic:publish(Exchange, Delivery),
+      [];
+    true -> Routs
+  end.
+
+make_headers(undefined, undefined) -> [];
+make_headers(undefined, Headers) -> Headers;
+make_headers(Arguments, undefined) -> Arguments;
+make_headers([], Headers) -> Headers;
+make_headers(Arguments, []) -> Arguments;
+make_headers(Arguments, [{Header, _, _} = Head | Tail]) ->
+  case  lists:keysearch(Header, 1, Arguments) of
+    {value, _} -> make_headers(Arguments, Tail);
+    false -> make_headers(lists:append([Head], Arguments), Tail)
+  end.
 
 validate_binding(_X, _B) -> ok.
 
 
-validate(_X) -> ok.
+validate(_Exchange) -> ok.
 create(_Tx, _X) -> ok.
 delete(_Tx, _X, _Bs) -> ok.
 policy_changed(_X1, _X2) -> ok.
 add_binding(_Tx, _X, _B) -> ok.
 remove_bindings(_Tx, _X, _Bs) -> ok.
-assert_args_equivalence(X, Args) ->
-  rabbit_exchange:assert_args_equivalence(X, Args).
+assert_args_equivalence(Exchange, Args) ->
+  rabbit_exchange:assert_args_equivalence(Exchange, Args).
