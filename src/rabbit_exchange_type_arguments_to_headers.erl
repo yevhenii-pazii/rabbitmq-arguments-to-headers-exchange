@@ -35,7 +35,7 @@
   {?MODULE,
     [{description, "exchange type argument-to-header"},
       {mfa,         {rabbit_registry, register, [exchange, <<"argument">>, ?MODULE]}},
-      {cleanup, {rabbit_registry, unregister, [exchange, <<"argumente">>]}},
+      {cleanup,     {rabbit_registry, unregister, [exchange, <<"argument">>]}},
       {requires,    rabbit_registry},
       {enables,     kernel_ready}]
   }
