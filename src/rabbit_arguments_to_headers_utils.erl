@@ -14,13 +14,14 @@
 
 -spec contains_arguments(
     Delivery::rabbit_types:delivery(),
-    Arguments::rabbit_framing:amqp_table() | 'undefined') -> boolean().
+    Exchange::rabbit_types:exchange()) -> boolean().
 
--spec add_arguments(Delivery::rabbit_types:delivery(),
-    Arguments::rabbit_framing:amqp_table() | 'undefined') -> rabbit_types:delivery().
+-spec make_delivery(
+    Delivery::rabbit_types:delivery(),
+    Exchange::rabbit_types:exchange()) -> rabbit_types:delivery().
 
 %% API
--export([add_arguments/2, contains_arguments/2]).
+-export([make_delivery/2, contains_arguments/2]).
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -28,7 +29,7 @@
 
 
 % Tested
-contains_arguments(Delivery, Arguments) ->
+contains_arguments(Delivery, #exchange{arguments = Arguments}) ->
   MessageHeaders = get_defined(msg_headers(Delivery), []),
   ExchangeArgumetns = get_defined(Arguments, []),
   has_arguments(MessageHeaders, ExchangeArgumetns).
@@ -51,7 +52,7 @@ has_argument(Headers, {Key, Type, Value}) ->
 
 
 
-add_arguments(Delivery, Arguments) ->
+make_delivery(Delivery, #exchange{arguments = Arguments} = Exchange) ->
   MessageHeaders = get_defined(msg_headers(Delivery), []),
   ExchangeArgumetns = get_defined(Arguments, []),
   NewHeaders = make_headers(MessageHeaders, ExchangeArgumetns),
@@ -192,13 +193,15 @@ contains_arguments_method_conteins_test() ->
   Headers = [{<<"header">>, longstr, <<"value">>}],
   Arguments = [{<<"header">>, longstr, <<"value">>}],
   Delivery = #delivery{message = #basic_message{content = #content{properties = #'P_basic'{headers = Headers}}}},
-  ?assert(contains_arguments(Delivery, Arguments)).
+  Exchange = #exchange{arguments = Arguments},
+  ?assert(contains_arguments(Delivery, Exchange)).
 
 contains_arguments_method_not_conteins_test() ->
   Headers = [{<<"header">>, longstr, <<"value">>}],
   Arguments = [{<<"arg">>, longstr, <<"value">>}],
   Delivery = #delivery{message = #basic_message{content = #content{properties = #'P_basic'{headers = Headers}}}},
-  ?assertNot(contains_arguments(Delivery, Arguments)).
+  Exchange = #exchange{arguments = Arguments},
+  ?assertNot(contains_arguments(Delivery, Exchange)).
 
 
 %% Tests for
@@ -242,9 +245,11 @@ add_arguments_method_test() ->
   Arguments = [{<<"arg">>, longstr, <<"value">>}],
   ExpectedHeaders = [{<<"arg">>, longstr, <<"value">>}, {<<"header">>, longstr, <<"value">>}],
 
+  Exchange = #exchange{arguments = Arguments},
   Delivery = #delivery{message = #basic_message{content = #content{properties = #'P_basic'{headers = Headers}}}},
+
   ExpectDelivery = #delivery{message = #basic_message{content = #content{properties = #'P_basic'{headers = ExpectedHeaders}}}},
 
-  ?assertEqual(ExpectDelivery, add_arguments(Delivery, Arguments)).
+  ?assertEqual(ExpectDelivery, make_delivery(Delivery, Exchange)).
 
 -endif.
