@@ -12,7 +12,7 @@
 -include_lib("rabbit_common/include/rabbit.hrl").
 -include_lib("rabbit_common/include/rabbit_framing.hrl").
 
--import(rabbit_basic, [delivery/4, build_content/2]).
+-import(rabbit_basic, [build_content/2]).
 
 -spec contains_arguments(
     Delivery::rabbit_types:delivery(),
@@ -78,21 +78,16 @@ get_defined(Arg, Default) ->
     _ -> Arg
   end.
 
-%% Taken from rabbit_exchange_type_delayed_message
-set_delivery_headers(Delivery, H) ->
+set_delivery_headers(Delivery, Headers) ->
   Msg = get_msg(Delivery),
   Content = get_content(Msg),
   Props = get_props(Content),
 
   #content{payload_fragments_rev = PFR} = Content,
+  NewContent = rabbit_basic:build_content(Props#'P_basic'{headers = Headers}, PFR),
+  NewMessage = Msg#basic_message{content = NewContent},
 
-  Props2 = Props#'P_basic'{headers = H},
-
-  Content2 = rabbit_basic:build_content(Props2, PFR),
-  Msg2 = Msg#basic_message{content = Content2},
-
-  #delivery{mandatory = Mandatory, confirm = Confirm, msg_seq_no = MsgSeqNo} = Delivery,
-  rabbit_basic:delivery(Mandatory, Confirm, Msg2, MsgSeqNo).
+  Delivery#delivery{message = NewMessage}.
 
 %% Taken from rabbit_exchange_type_delayed_message
 msg_headers(Delivery) ->
