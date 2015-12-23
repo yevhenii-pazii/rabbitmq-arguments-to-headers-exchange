@@ -4,3 +4,14 @@ notifications:
 otp_release:
   - 18.1
   - 17.4
+
+before_deploy:
+  - make package
+
+deploy:
+  provider: releases
+  api_key: "kaeDMXRShqf8YGSpepaz"
+  file: "ez/rabbitmq_arguments_to_headers_exchange-3.5.6.ez"
+  skip_cleanup: true
+  on:
+    tags: true
