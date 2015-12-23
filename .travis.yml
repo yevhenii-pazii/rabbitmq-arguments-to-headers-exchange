@@ -5,6 +5,9 @@ otp_release:
   - 18.1
   - 17.4
 
+before_script:
+  - make version
+
 before_deploy:
   - make package
 

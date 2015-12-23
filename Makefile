@@ -1,5 +1,7 @@
-PACKAGE=rabbitmq_arguments_to_headers_exchange
 RABBIT_VERSION=3.5.6
+APP_VERSION=0.1.3
+PACKAGE=rabbitmq_arguments_to_headers_exchange
+
 ARCH=$(PACKAGE)-$(RABBIT_VERSION)
 DIST_DIR=ez
 EBIN_DIR=ebin
@@ -10,6 +12,9 @@ DEPS_EZ=$(foreach DEP, $(DEPS), $(DEPS_DIR)/$(DEP).ez)
 RABBITMQ_HOME ?= .
 
 all:
+
+version:
+	sed -i -- 's/###/$(APP_VERSION)/g' src/rabbitmq_arguments_to_headers_exchange.app.src
 
 clean:
 	rm -rf $(DIST_DIR)
