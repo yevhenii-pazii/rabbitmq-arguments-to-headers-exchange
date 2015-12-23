@@ -13,7 +13,11 @@ before_deploy:
 
 deploy:
   provider: releases
+<<<<<<< HEAD
   api_key: b5122be5bcb21c059e6719ce2954e4aa247f38d0
+=======
+  api_key: 00641c39f201c7d86d6749c4a5cb14a55d8b3343
+>>>>>>> 1c84efc6ff1af758e000b86c484251e0a90a1a15
   file: "ez/rabbitmq_arguments_to_headers_exchange-3.5.6.ez"
   skip_cleanup: true
 #  on:
