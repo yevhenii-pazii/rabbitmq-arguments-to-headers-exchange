@@ -13,7 +13,8 @@ before_deploy:
 
 deploy:
   provider: releases
-  api_key: kaeDMXRShqf8YGSpepaz
+  user: {{GITHUB_USER}}
+  password: {{GITHUB_PASSWORD}}
   file: ez/rabbitmq_arguments_to_headers_exchange-3.5.6.ez
   skip_cleanup: true
 #  on:
