@@ -4,7 +4,7 @@ This is a custom exchange for [RabbitMQ](http://www.rabbitmq.com/). Exchange has
 
 ## Features
 
-All arguments defined for exchange will be added to message headers or update if such header exists.
+All arguments defined for exchange will be added to message headers or updated if such header exists.
 
 ## Usage Examples
 
