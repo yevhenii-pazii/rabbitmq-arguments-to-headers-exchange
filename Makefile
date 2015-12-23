@@ -1,5 +1,5 @@
 RABBIT_VERSION=3.5.6
-APP_VERSION=0.1.3
+APP_VERSION=1.0.0
 PACKAGE=rabbitmq_arguments_to_headers_exchange
 
 ARCH=$(PACKAGE)-$(RABBIT_VERSION)
