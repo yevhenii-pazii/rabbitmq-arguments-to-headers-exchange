@@ -250,17 +250,4 @@ make_delivery_method_test() ->
 
   ?assertEqual(ExpectedHeaders, msg_headers(ExpectDelivery)).
 
-
-%set_delivery_headers(Delivery, H) ->
-%  Msg = get_msg(Delivery),
-%  Content = get_content(Msg),
-%  Props = get_props(Content),
-%  Props2 = Props#'P_basic'{headers = H},
-%  Content2 = Content#content{properties = Props2},
-%  Msg2 = Msg#basic_message{content = Content2},
-%  Delivery#delivery{message = Msg2}.
-
-set_delivery_headers_method_test() ->
-  ok.
-
 -endif.
