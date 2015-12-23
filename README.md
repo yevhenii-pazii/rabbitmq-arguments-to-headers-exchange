@@ -8,18 +8,18 @@ All arguments defined for exchange will be added to message headers or update if
 
 ## Usage Examples
 
-1. Download released artifact:
+Download released artifact:
 ```sh
 wget https://github.com/thecederick/rabbitmq-arguments-to-headers-exchange/releases/download/rabbitmq-3.5.6/rabbitmq_arguments_to_headers_exchange-3.5.6.ez
 ```
-2. Copy plugin to RabbitMQ plugins directory:
+Copy plugin to RabbitMQ plugins directory:
 ```sh
 cp rabbitmq_arguments_to_headers_exchange-3.5.6.ez /usr/lib/rabbitmq/lib/rabbitmq_server-3.5.6/plugins
 ```
-3. Enable plugin:
+Enable plugin:
 ```sh
 rabbitmq-plugins enable rabbitmq_arguments_to_headers_exchange
 ```
-4. Create Exchange with type `argument`.
+Create Exchange with type `argument`.
 
 
