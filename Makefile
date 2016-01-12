@@ -3,7 +3,7 @@ APP_VERSION=1.0.1
 PACKAGE=rabbitmq_arguments_to_headers_exchange
 
 APP_FILE=src/rabbitmq_arguments_to_headers_exchange.app.src
-ARCH=$(PACKAGE)-$(RABBIT_VERSION)-$(APP_VERSION)
+ARCH=$(PACKAGE)-$(RABBIT_VERSION)
 DIST_DIR=ez
 EBIN_DIR=ebin
 INCLUDE_DIRS=include
