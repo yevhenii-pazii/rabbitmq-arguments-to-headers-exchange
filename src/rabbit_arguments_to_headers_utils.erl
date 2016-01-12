@@ -104,7 +104,7 @@ get_headers(#'P_basic'{headers = H}) -> H.
 table_lookup(Table, Key) ->
   case lists:keysearch(Key, 1, Table) of
     {value, {_, TypeBin, ValueBin}} -> {TypeBin, ValueBin};
-    false                           -> undefined
+    _                               -> undefined
   end.
 
 set_table_value(Table, Key, Type, Value) ->

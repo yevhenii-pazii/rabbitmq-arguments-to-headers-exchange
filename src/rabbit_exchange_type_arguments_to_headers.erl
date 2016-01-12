@@ -50,20 +50,21 @@ description() ->
 serialise_events() -> false.
 
 route(#exchange{name = Name} = Exchange, Delivery) ->
-
+  error_logger:info_msg("Exchange: ~p~nReceived delivery: ~p~n", [Exchange, Delivery]),
   Routs = rabbit_router:match_routing_key(Name, ['_']),
   case contains_arguments(Delivery, Exchange) of
-    true -> Routs;
+    true ->
+      error_logger:info_msg("Delivery already contains arguments"),
+      Routs;
     false ->
       NewDelivery = make_delivery(Delivery, Exchange),
+      error_logger:info_msg("New Delivery: ~p~n", [Delivery]),
       rabbit_amqqueue:deliver(rabbit_amqqueue:lookup(Routs), NewDelivery),
       []
   end.
 
 
 validate_binding(_X, _B) -> ok.
-
-
 validate(_Exchange) -> ok.
 create(_Tx, _X) -> ok.
 delete(_Tx, _X, _Bs) -> ok.
