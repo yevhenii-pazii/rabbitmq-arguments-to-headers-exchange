@@ -50,26 +50,36 @@ description() ->
 serialise_events() -> false.
 
 route(#exchange{name = Name} = Exchange, Delivery) ->
-  error_logger:info_msg("Exchange: ~p~nReceived delivery: ~p~n", [Exchange, Delivery]),
   Routs = rabbit_router:match_routing_key(Name, ['_']),
   case contains_arguments(Delivery, Exchange) of
-    true ->
-      error_logger:info_msg("Delivery already contains arguments"),
-      Routs;
+    true -> Routs;
     false ->
       NewDelivery = make_delivery(Delivery, Exchange),
-      error_logger:info_msg("New Delivery: ~p~n", [Delivery]),
       rabbit_amqqueue:deliver(rabbit_amqqueue:lookup(Routs), NewDelivery),
       []
   end.
 
 
 validate_binding(_X, _B) -> ok.
+
 validate(_Exchange) -> ok.
-create(_Tx, _X) -> ok.
-delete(_Tx, _X, _Bs) -> ok.
+
+create(Tx, Exchange) ->
+  error_logger:info_msg("Created Exchange:~nTransaction:~p~nExchange:~p~n", [Tx, Exchange]),
+  ok.
+delete(Tx, Exchange, Bindings) ->
+  error_logger:info_msg("Deleted exchange:~nTransaction:~p~nExchange:~p~nBinding:~p~n", [Tx, Exchange, Bindings]),
+  ok.
+
 policy_changed(_X1, _X2) -> ok.
-add_binding(_Tx, _X, _B) -> ok.
-remove_bindings(_Tx, _X, _Bs) -> ok.
+
+add_binding(Tx, Exchange, Binding) ->
+  error_logger:info_msg("Added binding:~nTransaction:~p~nExchange:~p~nBinding:~p~n", [Tx, Exchange, Binding]),
+  ok.
+
+remove_bindings(Tx, Exchange, Bindings) ->
+  error_logger:info_msg("Removed binding:~nTransaction:~p~nExchange:~p~nBinding:~p~n", [Tx, Exchange, Bindings]),
+  ok.
+
 assert_args_equivalence(Exchange, Args) ->
   rabbit_exchange:assert_args_equivalence(Exchange, Args).
