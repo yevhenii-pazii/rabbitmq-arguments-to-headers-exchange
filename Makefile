@@ -1,5 +1,5 @@
 RABBIT_VERSION=3.5.6
-APP_VERSION=1.0.1
+APP_VERSION=1.0.2
 PACKAGE=rabbitmq_arguments_to_headers_exchange
 
 APP_FILE=src/rabbitmq_arguments_to_headers_exchange.app.src
