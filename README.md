@@ -10,11 +10,11 @@ All arguments defined for exchange will be added to message headers or updated i
 
 Download released artifact:
 ```sh
-wget https://github.com/thecederick/rabbitmq-arguments-to-headers-exchange/releases/download/rabbitmq-3.5.6-1.0.2/rabbitmq_arguments_to_headers_exchange-3.5.6.ez
+wget https://github.com/thecederick/rabbitmq-arguments-to-headers-exchange/releases/download/rabbitmq-3.5.7-1.0.2/rabbitmq_arguments_to_headers_exchange-3.5.7.ez
 ```
 Copy plugin to RabbitMQ plugins directory:
 ```sh
-cp rabbitmq_arguments_to_headers_exchange-3.5.6.ez /usr/lib/rabbitmq/lib/rabbitmq_server-3.5.6/plugins
+cp rabbitmq_arguments_to_headers_exchange-3.5.6.ez /usr/lib/rabbitmq/lib/rabbitmq_server-3.5.7/plugins
 ```
 Enable plugin:
 ```sh
