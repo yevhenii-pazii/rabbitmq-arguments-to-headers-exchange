@@ -1,27 +1,23 @@
-RABBIT_VERSION=3.5.7
-APP_VERSION=1.0.2
-PACKAGE=rabbitmq_arguments_to_headers_exchange
+PROJECT = rabbitmq_arguments_to_headers_exchange
 
-APP_FILE=src/rabbitmq_arguments_to_headers_exchange.app.src
-ARCH=$(PACKAGE)-$(RABBIT_VERSION)
-DIST_DIR=ez
-EBIN_DIR=ebin
-INCLUDE_DIRS=include
+TEST_DEPS = amqp_client
 
-version:
-	sed -i -- 's/###/$(APP_VERSION)/g' $(APP_FILE)
+DEP_PLUGINS = rabbit_common/mk/rabbitmq-plugin.mk
 
-clean:
-	sed -i -- 's/$(APP_VERSION)/###/g' $(APP_FILE)
-	rm -rf $(DIST_DIR)
-	rm -rf $(EBIN_DIR)
+# FIXME: Use erlang.mk patched for RabbitMQ, while waiting for PRs to be
+# reviewed and merged.
 
-package:
-	rm -f $(DIST_DIR)/$(ARCH).ez
-	mkdir -p $(DIST_DIR)/$(ARCH)
-	cp -r $(EBIN_DIR) $(DIST_DIR)/$(ARCH)
-	$(foreach EXTRA_DIR, $(INCLUDE_DIRS), cp -r $(EXTRA_DIR) $(DIST_DIR)/$(ARCH);)
-	(cd $(DIST_DIR); zip -r $(ARCH).ez $(ARCH))
-	rm -rf $(DIST_DIR)/$(ARCH)
-	sed -i -- 's/$(APP_VERSION)/###/g' $(APP_FILE)
+ERLANG_MK_REPO = https://github.com/rabbitmq/erlang.mk.git
+ERLANG_MK_COMMIT = rabbitmq-tmp
 
+include rabbitmq-components.mk
+include erlang.mk
+
+# --------------------------------------------------------------------
+# Testing.
+# --------------------------------------------------------------------
+
+WITH_BROKER_TEST_MAKEVARS := \
+        RABBITMQ_CONFIG_FILE=$(CURDIR)/etc/rabbit-test
+WITH_BROKER_TEST_COMMANDS := \
+	rabbit_exchange_type_recent_history_test:test()

@@ -13,3 +13,4 @@ _build
 rebar.lock
 tmp
 *.ez
+*.d
