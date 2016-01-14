@@ -13,10 +13,9 @@ ERLANG_MK_COMMIT = rabbitmq-tmp
 include rabbitmq-components.mk
 include erlang.mk
 
-RABBIT_VERSION=3.6.0
-RABBIT_TAG=rabbitmq_v3_6_0
-APP_VERSION=1.0.2
 
+RABBIT_VERSION=3.6.0
+APP_VERSION=1.0.2
 APP_FILE=src/rabbitmq_arguments_to_headers_exchange.app.src
 README=README.md
 ARCH=$(PROJECT)-$(RABBIT_VERSION)
@@ -24,14 +23,17 @@ EZ_DIR=ez/
 EBIN_DIR=ebin
 INCLUDE_DIRS=include
 
+
+current_rmq_ref=rabbitmq_v3_6_0
+base_rmq_ref=rabbitmq_v3_6_0
+
+
 # --------------------------------------------------------------------
 # My
 # --------------------------------------------------------------------
 
 version:
 	sed -i -- 's/###/$(APP_VERSION)/g' $(APP_FILE)
-	sed -i -- 's/RRR/$(RABBIT_VERSION)/g' $(README)
-	sed -i -- 's/VVV/$(APP_VERSION)/g' $(README)
 
 package:
 	rm -rf $(EZ_DIR)
@@ -42,12 +44,3 @@ package:
 	rm -rf $(EZ_DIR)/$(ARCH)
 	sed -i -- 's/$(APP_VERSION)/###/g' $(APP_FILE)
 
-
-# --------------------------------------------------------------------
-# Testing.
-# --------------------------------------------------------------------
-
-WITH_BROKER_TEST_MAKEVARS := \
-        RABBITMQ_CONFIG_FILE=$(CURDIR)/etc/rabbit-test
-WITH_BROKER_TEST_COMMANDS := \
-	rabbit_exchange_type_recent_history_test:test()
