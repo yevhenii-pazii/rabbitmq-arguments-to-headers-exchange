@@ -12,6 +12,9 @@ before_script:
 script:
   - make
 
+after_script:
+  - rebar skip_deps=true eunit
+
 before_deploy:
   - make package
 

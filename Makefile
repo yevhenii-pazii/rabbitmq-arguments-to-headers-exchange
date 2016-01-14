@@ -13,6 +13,36 @@ ERLANG_MK_COMMIT = rabbitmq-tmp
 include rabbitmq-components.mk
 include erlang.mk
 
+RABBIT_VERSION=3.6.0
+RABBIT_TAG=rabbitmq_v3_6_0
+APP_VERSION=1.0.2
+
+APP_FILE=src/rabbitmq_arguments_to_headers_exchange.app.src
+README=README.md
+ARCH=$(PROJECT)-$(RABBIT_VERSION)
+EZ_DIR=ez/
+EBIN_DIR=ebin
+INCLUDE_DIRS=include
+
+# --------------------------------------------------------------------
+# My
+# --------------------------------------------------------------------
+
+version:
+	sed -i -- 's/###/$(APP_VERSION)/g' $(APP_FILE)
+	sed -i -- 's/RRR/$(RABBIT_VERSION)/g' $(README)
+	sed -i -- 's/VVV/$(APP_VERSION)/g' $(README)
+
+package:
+	rm -rf $(EZ_DIR)
+	mkdir -p $(EZ_DIR)/$(ARCH)
+	cp -r $(EBIN_DIR) $(EZ_DIR)/$(ARCH)
+	$(foreach EXTRA_DIR, $(INCLUDE_DIRS), cp -r $(EXTRA_DIR) $(EZ_DIR)/$(ARCH);)
+	(cd $(EZ_DIR); zip -r $(ARCH).ez $(ARCH))
+	rm -rf $(EZ_DIR)/$(ARCH)
+	sed -i -- 's/$(APP_VERSION)/###/g' $(APP_FILE)
+
+
 # --------------------------------------------------------------------
 # Testing.
 # --------------------------------------------------------------------
