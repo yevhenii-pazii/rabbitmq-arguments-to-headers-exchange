@@ -12,7 +12,7 @@
 -include_lib("rabbit_common/include/rabbit.hrl").
 -include_lib("rabbit_common/include/rabbit_framing.hrl").
 
--import(rabbit_arguments_to_headers_utils, [make_delivery/2, contains_arguments/2]).
+-import(rabbit_arguments_to_headers_utils, [make_poperties/2, contains_arguments/2]).
 
 -behaviour(rabbit_exchange_type).
 
@@ -32,32 +32,37 @@
 ]).
 
 -rabbit_boot_step(
-  {?MODULE,
-    [{description, "exchange type argument-to-header"},
-      {mfa,         {rabbit_registry, register, [exchange, <<"argument">>, ?MODULE]}},
-      {cleanup,     {rabbit_registry, unregister, [exchange, <<"argument">>]}},
-      {requires,    rabbit_registry},
-      {enables,     kernel_ready}]
-  }
+{?MODULE,
+  [{description, "exchange type argument-to-header"},
+    {mfa,         {rabbit_registry, register, [exchange, <<"argument">>, ?MODULE]}},
+    {cleanup,     {rabbit_registry, unregister, [exchange, <<"argument">>]}},
+    {requires,    rabbit_registry},
+    {enables,     kernel_ready}]
+}
 ).
 
 
 description() ->
   [{name, <<"argument">>},
-   {description, <<"Adds exchange argumets to message headers">>}].
+    {description, <<"Adds exchange argumets to message headers">>}].
 
 
 serialise_events() -> false.
 
 route(#exchange{name = Name} = Exchange, Delivery) ->
-  Routs = rabbit_router:match_routing_key(Name, ['_']),
+  error_logger:info_msg("Exchange: ~p~n", [Exchange]),
+
   case contains_arguments(Delivery, Exchange) of
-    true -> Routs;
+    true ->
+      rabbit_router:match_routing_key(Name, ['_']);
     false ->
-      NewDelivery = make_delivery(Delivery, Exchange),
-      rabbit_amqqueue:deliver(rabbit_amqqueue:lookup(Routs), NewDelivery),
+      rabbit_basic:publish(Exchange, get_routing_key(Delivery), make_poperties(Delivery, Exchange), get_body(Delivery)),
       []
   end.
+
+
+get_body(#delivery{message = #basic_message{content = #content{payload_fragments_rev = Body}}}) -> Body.
+get_routing_key(#delivery{message = #basic_message{routing_keys = RK}}) -> RK.
 
 
 validate_binding(_X, _B) -> ok.
