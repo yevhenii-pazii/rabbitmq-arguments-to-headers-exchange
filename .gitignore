@@ -16,3 +16,4 @@ tmp
 *.d
 .erlang.mk
 rebar
+*.iml
