@@ -15,7 +15,7 @@ include erlang.mk
 
 
 RABBIT_VERSION=3.6.0
-APP_VERSION=1.0.2
+APP_VERSION=1.0.3
 APP_FILE=src/rabbitmq_arguments_to_headers_exchange.app.src
 README=README.md
 ARCH=$(PROJECT)-$(RABBIT_VERSION)

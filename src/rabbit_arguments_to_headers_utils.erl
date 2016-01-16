@@ -18,12 +18,13 @@
     Delivery::rabbit_types:delivery(),
     Exchange::rabbit_types:exchange()) -> boolean().
 
--spec make_delivery(
+
+-spec make_poperties(
     Delivery::rabbit_types:delivery(),
-    Exchange::rabbit_types:exchange()) -> rabbit_types:delivery().
+    Exchange::rabbit_types:exchange()) -> 'P_basic'.
 
 %% API
--export([make_delivery/2, contains_arguments/2]).
+-export([make_poperties/2, contains_arguments/2]).
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -52,13 +53,14 @@ has_argument(Headers, {Key, Type, Value}) ->
     _ -> {HeaderType, HeaderValue} = HeadersRow, (Type == HeaderType) and (Value == HeaderValue)
   end.
 
-
-
-make_delivery(Delivery, #exchange{arguments = Arguments}) ->
+make_poperties(Delivery, #exchange{arguments = Arguments}) ->
   MessageHeaders = get_defined(msg_headers(Delivery), []),
   ExchangeArgumetns = get_defined(Arguments, []),
   NewHeaders = make_headers(MessageHeaders, ExchangeArgumetns),
-  set_delivery_headers(Delivery, NewHeaders).
+  Msg = get_msg(Delivery),
+  Content = get_content(Msg),
+  Props = get_props(Content),
+  Props#'P_basic'{headers = NewHeaders}.
 
 % Tested
 make_headers(Headers, []) -> Headers;
@@ -77,17 +79,6 @@ get_defined(Arg, Default) ->
     undefined -> Default;
     _ -> Arg
   end.
-
-set_delivery_headers(Delivery, Headers) ->
-  Msg = get_msg(Delivery),
-  Content = get_content(Msg),
-  Props = get_props(Content),
-
-  #content{payload_fragments_rev = PFR} = Content,
-  NewContent = rabbit_basic:build_content(Props#'P_basic'{headers = Headers}, PFR),
-  NewMessage = Msg#basic_message{content = NewContent},
-
-  Delivery#delivery{message = NewMessage}.
 
 %% Taken from rabbit_exchange_type_delayed_message
 msg_headers(Delivery) ->
@@ -235,19 +226,5 @@ make_headers_method_wrong_value_test() ->
   Arguments = [{<<"header">>, longstr, <<"value2">>}],
   Result = [{<<"header">>, longstr, <<"value2">>}],
   ?assert(has_arguments(Result, make_headers(Headers, Arguments))).
-
-%% Tests for
-%% @see make_delivery/2
-make_delivery_method_test() ->
-  Headers = [{<<"header">>, longstr, <<"value">>}],
-  Arguments = [{<<"arg">>, longstr, <<"value">>}],
-  ExpectedHeaders = [{<<"arg">>, longstr, <<"value">>}, {<<"header">>, longstr, <<"value">>}],
-
-  Exchange = #exchange{arguments = Arguments},
-  Delivery = #delivery{message = #basic_message{content = #content{properties = #'P_basic'{headers = Headers}}}},
-
-  ExpectDelivery = make_delivery(Delivery, Exchange),
-
-  ?assertEqual(ExpectedHeaders, msg_headers(ExpectDelivery)).
 
 -endif.
