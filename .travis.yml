@@ -8,7 +8,6 @@ otp_release:
 
 before_script:
   - make version
-  - make distclean
   - make deps
 
 before_deploy:
