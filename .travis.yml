@@ -8,12 +8,8 @@ otp_release:
 
 before_script:
   - make version
-
-script:
-  - make
-
-after_script:
-  - rebar skip_deps=true eunit
+  - make distclean
+  - make deps
 
 before_deploy:
   - make package
