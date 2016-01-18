@@ -18,13 +18,12 @@
     Delivery::rabbit_types:delivery(),
     Exchange::rabbit_types:exchange()) -> boolean().
 
-
--spec make_poperties(
+-spec make_delivery(
     Delivery::rabbit_types:delivery(),
-    Exchange::rabbit_types:exchange()) -> 'P_basic'.
+    Exchange::rabbit_types:exchange()) -> rabbit_types:delivery().
 
 %% API
--export([make_poperties/2, contains_arguments/2]).
+-export([make_delivery/2, contains_arguments/2]).
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -53,14 +52,13 @@ has_argument(Headers, {Key, Type, Value}) ->
     _ -> {HeaderType, HeaderValue} = HeadersRow, (Type == HeaderType) and (Value == HeaderValue)
   end.
 
-make_poperties(Delivery, #exchange{arguments = Arguments}) ->
+
+
+make_delivery(Delivery, #exchange{arguments = Arguments}) ->
   MessageHeaders = get_defined(msg_headers(Delivery), []),
-  ExchangeArgumetns = get_defined(Arguments, []),
-  NewHeaders = make_headers(MessageHeaders, ExchangeArgumetns),
-  Msg = get_msg(Delivery),
-  Content = get_content(Msg),
-  Props = get_props(Content),
-  Props#'P_basic'{headers = NewHeaders}.
+  ExchangeArguments = get_defined(Arguments, []),
+  NewHeaders = make_headers(MessageHeaders, ExchangeArguments),
+  set_delivery_headers(Delivery, NewHeaders).
 
 % Tested
 make_headers(Headers, []) -> Headers;
@@ -79,6 +77,17 @@ get_defined(Arg, Default) ->
     undefined -> Default;
     _ -> Arg
   end.
+
+set_delivery_headers(Delivery, Headers) ->
+  Msg = get_msg(Delivery),
+  Content = get_content(Msg),
+  Props = get_props(Content),
+
+  #content{payload_fragments_rev = PFR} = Content,
+  NewContent = rabbit_basic:build_content(Props#'P_basic'{headers = Headers}, PFR),
+
+  NewMessage = Msg#basic_message{content = NewContent},
+  Delivery#delivery{message = NewMessage}.
 
 %% Taken from rabbit_exchange_type_delayed_message
 msg_headers(Delivery) ->

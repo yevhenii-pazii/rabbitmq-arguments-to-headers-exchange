@@ -12,7 +12,7 @@
 -include_lib("rabbit_common/include/rabbit.hrl").
 -include_lib("rabbit_common/include/rabbit_framing.hrl").
 
--import(rabbit_arguments_to_headers_utils, [make_poperties/2, contains_arguments/2]).
+-import(rabbit_arguments_to_headers_utils, [make_delivery/2, contains_arguments/2]).
 
 -behaviour(rabbit_exchange_type).
 
@@ -56,13 +56,12 @@ route(#exchange{name = Name} = Exchange, Delivery) ->
     true ->
       rabbit_router:match_routing_key(Name, ['_']);
     false ->
-      rabbit_basic:publish(Exchange, get_routing_key(Delivery), make_poperties(Delivery, Exchange), get_body(Delivery)),
+      NewDelivery = make_delivery(Delivery, Exchange),
+      QNames = rabbit_exchange:route(Exchange, NewDelivery),
+      Qs = rabbit_amqqueue:lookup(QNames),
+      rabbit_amqqueue:deliver(Qs, NewDelivery),
       []
   end.
-
-
-get_body(#delivery{message = #basic_message{content = #content{payload_fragments_rev = Body}}}) -> Body.
-get_routing_key(#delivery{message = #basic_message{routing_keys = RK}}) -> RK.
 
 
 validate_binding(_X, _B) -> ok.
